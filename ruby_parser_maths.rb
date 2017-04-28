@@ -2,11 +2,15 @@ require 'strscan'
 
 class TomsRubyParser
 
+  attr_reader :tokens
+
   def initialize
 
     puts 'I am a fantastic Ruby Parser!'
 
     @string_scanner
+
+    @tokens = []
 
   end
 
@@ -24,13 +28,23 @@ class TomsRubyParser
 
       number = parse_number
 
-      if number == 'number expected'
-      then @string_scanner.pos = @string_scanner.pos + 1
+      if number == 'number expected' then
+        #@string_scanner.pos = @string_scanner.pos + 1
+
+        operator = parse_operator
+
+        if operator != nil then
+          @tokens << operator
+        end
+
+        puts "Testing operator parsing #{operator}"
+      else @tokens << number
       end
 
-    puts "Testing number parsing #{number}"
+      puts "Testing number parsing #{number}"
 
     end
+
   end
 
   def get_file_content(file_location)
@@ -56,6 +70,18 @@ class TomsRubyParser
     @string_scanner.skip(/\s+/)
 
     @string_scanner.scan(/[\d.]+/) || 'number expected'
+
+  end
+
+  def parse_operator
+
+    puts 'parsing operator'
+
+    @string_scanner.skip(/\s+/)
+
+    #puts "next char #{@string_scanner.peek(1)}"
+
+    @string_scanner.scan(/[+|\-]/)
 
   end
 end
