@@ -6,6 +6,8 @@ class TomsRubyParser
 
     puts 'I am a fantastic Ruby Parser!'
 
+    @string_scanner
+
   end
 
   def parse_external_file(file_location)
@@ -16,10 +18,19 @@ class TomsRubyParser
 
     @string_scanner = create_string_scanner( ruby_file_content)
 
-    number = parse_number(@string_scanner)
+    #number = parse_number
+
+    while @string_scanner.rest?
+
+      number = parse_number
+
+      if number == 'number expected'
+      then @string_scanner.pos = @string_scanner.pos + 1
+      end
 
     puts "Testing number parsing #{number}"
 
+    end
   end
 
   def get_file_content(file_location)
@@ -40,12 +51,11 @@ class TomsRubyParser
 
   end
 
-  def parse_number(string_scanner)
+  def parse_number
 
-    string_scanner.skip(/\s+/)
+    @string_scanner.skip(/\s+/)
 
-    string_scanner.scan(/[\d.]+/) || 'number expected'
+    @string_scanner.scan(/[\d.]+/) || 'number expected'
 
   end
-
 end
