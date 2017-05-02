@@ -81,7 +81,7 @@ class TomsRubyParser
 
     #puts "next char #{@string_scanner.peek(1)}"
 
-    @string_scanner.scan(/[+|\-]/)
+    @string_scanner.scan(/[+|\-|\*|\/]/)
 
   end
 end
