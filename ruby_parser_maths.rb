@@ -1,4 +1,6 @@
 require 'strscan'
+require_relative 'Expression'
+require_relative 'Operator'
 
 class TomsRubyParser
 
@@ -12,6 +14,8 @@ class TomsRubyParser
 
     @tokens = []
 
+    @full_expression
+
   end
 
   def parse_external_file(file_location)
@@ -22,28 +26,34 @@ class TomsRubyParser
 
     @string_scanner = create_string_scanner( ruby_file_content)
 
+    @full_expression = parse_expression
+
+    total_value = @full_expression.evaluate
+
+    puts "this is the total #{total_value}"
+
     #number = parse_number
 
-    while @string_scanner.rest?
+    #while @string_scanner.rest?
 
-      number = parse_number
+    #  number = parse_number
 
-      if number == 'number expected' then
+    #  if number == 'number expected' then
         #@string_scanner.pos = @string_scanner.pos + 1
 
-        operator = parse_operator
+    #    operator = parse_operator
 
-        if operator != nil then
-          @tokens << operator
-        end
+    #    if operator != nil then
+    #      @tokens << operator
+    #    end
 
-        puts "Testing operator parsing #{operator}"
-      else @tokens << number
-      end
+    #    puts "Testing operator parsing #{operator}"
+    #  else @tokens << number
+     # end
 
-      puts "Testing number parsing #{number}"
+    #  puts "Testing number parsing #{number}"
 
-    end
+    #end
 
   end
 
@@ -84,4 +94,37 @@ class TomsRubyParser
     @string_scanner.scan(/[+|\-|\*|\/]/)
 
   end
+
+  def parse_expression
+
+    left_of_expression = parse_number()
+
+    @tokens << left_of_expression
+
+    @string_scanner.skip(/\s+/)
+
+    operator = @string_scanner.scan(/[+|\-|\*|\/]/)
+
+    if operator
+
+      puts operator
+
+      @tokens << operator
+
+      operator_object = Operator.new( operator)
+
+      operator_value = operator_object.evaluate
+
+      puts operator_value
+
+      Expression.new( operator_value, left_of_expression, parse_expression)
+
+    else
+
+      left_of_expression
+
+    end
+
+  end
+
 end
